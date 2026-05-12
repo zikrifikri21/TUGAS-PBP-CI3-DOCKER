@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  simawa:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "2109:80"
+    environment:
+      TZ: Asia/Makassar
+    depends_on:
+      - simawadb
+
+  simawadb:
+    image: mysql:5.7
+    restart: unless-stopped
+    volumes:
+      - simawa-db:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: simawadb
+      MYSQL_USER: simawauser
+      MYSQL_PASSWORD: simawapassword
+      MYSQL_ROOT_PASSWORD: simawapassword
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "2121:80"
+    environment:
+      PMA_HOST: simawadb
+      MYSQL_ROOT_PASSWORD: simawapassword
+      UPLOAD_LIMIT: 64M
+    depends_on:
+      - simawadb
+
+volumes:
+  simawa-db:
