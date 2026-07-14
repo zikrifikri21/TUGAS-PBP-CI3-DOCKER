@@ -30,13 +30,13 @@ $config['recaptcha_site_key'] = '6LdGC2wkAAAAAIXncVdMMJ0Y2EooN1oGRzZkHBkk';
 $config['recaptcha_secret_key'] = '6LdGC2wkAAAAAAVZSqY2kd37zNBPD4R378qmts1C';
 
 $is_https = (
-    (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
-    (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+    (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+    (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) ||
+    (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
 );
 
-$host = $_SERVER['HTTP_HOST'];
-$config['base_url'] = ($is_https ? 'https' : 'http') . '://' . $host
-    . (strpos($host, 'localhost') !== false ? '/fhil_ci_2025/' : '/');
+$config['base_url'] = ($is_https ? 'https' : 'http')
+    . '://' . $_SERVER['HTTP_HOST'] . '/';
 
 /*
 |--------------------------------------------------------------------------

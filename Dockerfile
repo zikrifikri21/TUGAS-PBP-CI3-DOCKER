@@ -1,4 +1,4 @@
-FROM php:7.2-apache
+FROM php:7.2-fpm
 
 RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list \
     && sed -i 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-security|g' /etc/apt/sources.list \
@@ -7,9 +7,11 @@ RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /
     && apt-get install -y \
         unzip \
         zip \
-    && docker-php-ext-install mysqli pdo_mysql \
-    && a2enmod rewrite \
-    && sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf \
+        libpng-dev \
+        libjpeg62-turbo-dev \
+        libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-install mysqli pdo_mysql gd \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
@@ -24,6 +26,6 @@ RUN echo "upload_max_filesize=64M" >> /usr/local/etc/php/conf.d/uploads.ini \
 
 RUN chown -R www-data:www-data application/cache application/logs
 
-EXPOSE 80
+EXPOSE 9000
 
-CMD ["apache2-foreground"]
+CMD ["php-fpm"]
